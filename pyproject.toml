@@ -1,34 +1,27 @@
-[tool.poetry]
-name = "recordsql"
-version = "0.1.2"
-description = "A Python-based SQL query builder with a fluent and composable interface, built on expressQL."
-authors = ["Grayjou <cgrayjou@gmail.com>"]
-license = "MIT"
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tablesqlite"
+version = "0.1.0"
+description = "Declarative SQLite table builder and schema manager with integration support for recordsQL."
 readme = "README.md"
-homepage = "https://github.com/Grayjou/ExpressQL"
-repository = "https://github.com/Grayjou/ExpressQL"
-keywords = [
-    "SQL", 
-    "query-builder", 
-    "Python", 
-    "DSL", 
-    "expressQL", 
-    "chained comparisons", 
-    "placeholder", 
-    "SQL conditions", 
-    "CTE", 
-    "JOIN"
+license = { text = "MIT" }
+authors = [
+    { name = "Grayjou", email = "cgrayjou@gmail.com" }
+]
+requires-python = ">=3.8"
+dependencies = [
+    "expressQL>=0.1.0",  # Adjust based on your actual version
 ]
 
-[tool.poetry.dependencies]
-python = "^3.8"
-expressql = "^0.2.4"
+[project.urls]
+"Homepage" = "https://github.com/Grayjou/tablesqlite"
+"Source" = "https://github.com/Grayjou/tablesqlite"
+"Bug Tracker" = "https://github.com/Grayjou/tablesqlite/issues"
+"Documentation" = "https://github.com/Grayjou/tablesqlite#readme"
 
-[tool.poetry.group.dev.dependencies]
-pytest = "^7.0"
-black = "^23.0"
-flake8 = "^6.0"
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+[tool.setuptools]
+packages = ["tablesqlite"]
+include-package-data = true
