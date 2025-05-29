@@ -1,1 +1,1 @@
-
+from .schema_parse import parse_sql_schema
