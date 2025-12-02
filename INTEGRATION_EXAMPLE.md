@@ -194,3 +194,6 @@ query = insert_query_for(table_info, name="Test", age=25)
 MIT License
 
 ---
+
+> **Note**: For general library documentation, API reference, and installation instructions, see the main [README.md](README.md).
+
