@@ -62,12 +62,8 @@ class TestValidateName:
             validate_name("1column")
 
     def test_validate_name_empty(self) -> None:
-        """Test validate_name with empty name.
-
-        Note: There's a bug in validate_name - it checks name[0].isdigit() before
-        checking if the name is empty, causing IndexError.
-        """
-        with pytest.raises((ValueError, IndexError)):
+        """Test validate_name with empty name."""
+        with pytest.raises(ValueError, match="cannot be empty"):
             validate_name("")
 
     def test_validate_name_non_string(self) -> None:
@@ -152,16 +148,9 @@ class TestValidateName:
             validate_name("123")
 
     def test_validate_name_number_allowed(self) -> None:
-        """Test validate_name with number name allowed.
-
-        Note: There's inconsistent behavior - when allow_number=True, it still
-        raises 'cannot start with a digit'. The allow_number flag doesn't fully
-        work as expected.
-        """
-        # This currently raises ValueError because even with allow_number=True,
-        # the check for name[0].isdigit() still raises an error
-        with pytest.raises(ValueError):
-            validate_name("123", allow_number=True)
+        """Test validate_name with number name allowed."""
+        validate_name("123", allow_number=True)
+        validate_name("1column", allow_number=True)
 
 
 class TestStandardColumnValidation:
