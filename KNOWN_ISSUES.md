@@ -114,6 +114,33 @@ if not already_validated:  # Skip validation if already validated
 
 ---
 
+### 6. `rename_table_query` generates incorrect SQL syntax with `check_if_exists=True`
+
+**Location:** `tablesqlite/action_queries/tables.py` - `rename_table_query()` function
+
+**Description:** When `check_if_exists=True`, the function generates incorrect SQL syntax by placing `IF EXISTS` after `RENAME TO`.
+
+**Current behavior:**
+```python
+rename_table_query("users", "customers", check_if_exists=True)
+# Returns: "ALTER TABLE users RENAME TO IF EXISTS customers"
+```
+
+**Expected behavior:** The correct SQL syntax should have `IF EXISTS` before `RENAME TO`:
+```sql
+ALTER TABLE IF EXISTS users RENAME TO customers
+```
+
+**Suggested fix:**
+```python
+if check_if_exists:
+    query = f"ALTER TABLE IF EXISTS {old_name} RENAME TO {new_name}"
+else:
+    query = f"ALTER TABLE {old_name} RENAME TO {new_name}"
+```
+
+---
+
 ## Issues in expressQL (External Dependency)
 
 ### 1. Cannot parse complex CHECK constraints with IN expressions
