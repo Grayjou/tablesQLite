@@ -758,7 +758,12 @@ class SQLTableInfoBase(UndeterminedContainer):
         Raises:
             ValueError: If multiple auto-increment columns or invalid config.
         """
-        auto_columns = [col for col in self.columns if col.auto_increment]
+        primary_keys = self.get_primary_keys()
+        if len(primary_keys) == 1:
+            auto_columns = [col for col in primary_keys if col.auto_increment]
+        else:
+            auto_columns = []
+
         if len(auto_columns) > 1:
             raise ValueError("Only one column can be auto increment")
         if auto_columns and not auto_columns[0].primary_key:

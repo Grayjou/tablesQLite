@@ -621,22 +621,18 @@ class TestSQLTableInfoBase:
         assert isinstance(result, list)
 
     def test_table_auto_increment_validation(self) -> None:
-        """Test only one auto increment column allowed.
+        """Test only one auto increment column allowed."""
+        cols = [
+            SQLColumnInfoBase("user_id", "INTEGER", primary_key=True),
+            SQLColumnInfoBase("post_id", "INTEGER", primary_key=True),
+        ]
 
-        Note: This test is skipped because the current implementation incorrectly
-        treats all INTEGER PRIMARY KEY columns as auto_increment, even in composite
-        PKs. This causes false positives when multiple INTEGER PKs are present.
-        """
-        pytest.skip(
-            "Known issue: composite PK with INTEGER columns "
-            "triggers false auto_increment error"
-        )
+        table = SQLTableInfoBase("likes", columns=cols)
+        assert table.auto_increment_column is None
 
     def test_table_invalid_name(self) -> None:
         """Test table with invalid name."""
-        # Empty name causes IndexError (bug in validate_name when
-        # checking name[0].isdigit())
-        with pytest.raises((ValueError, IndexError)):
+        with pytest.raises(ValueError):
             SQLTableInfoBase("")
         with pytest.raises(ValueError):
             SQLTableInfoBase("1invalid")
