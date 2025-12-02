@@ -90,15 +90,16 @@ def validate_name(
     if not isinstance(name, str):
         raise TypeError("Name must be a string.")
 
+    if len(name) == 0:
+        raise ValueError("Column name cannot be empty.")
+
     if is_number(name) and not allow_number:
         raise ValueError(
             "Name as number not allowed. "
             "If you want to use a number, set allow_number=True."
         )
-    elif name[0].isdigit():
+    elif name[0].isdigit() and not allow_number:
         raise ValueError("Name cannot start with a digit.")
-    if len(name) == 0:
-        raise ValueError("Column name cannot be empty.")
 
     if validate_len and len(name) > max_len:
         raise ValueError(
@@ -127,7 +128,7 @@ def validate_name(
                     raise ValueError(
                         "Column name has consecutive dots or leading/trailing dot."
                     )
-                if part[0].isdigit():
+                if part[0].isdigit() and not allow_number:
                     raise ValueError(
                         f"Each part of a dotted name must not start with a digit: {part}"
                     )

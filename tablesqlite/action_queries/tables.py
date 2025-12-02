@@ -79,7 +79,7 @@ def rename_table_query(
         A tuple of (SQL query string, list of parameters).
     """
     if check_if_exists:
-        query = f"ALTER TABLE {old_name} RENAME TO IF EXISTS {new_name}"
+        query = f"ALTER TABLE IF EXISTS {old_name} RENAME TO {new_name}"
     else:
         query = f"ALTER TABLE {old_name} RENAME TO {new_name}"
     return query, []

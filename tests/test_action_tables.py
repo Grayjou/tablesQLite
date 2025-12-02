@@ -122,6 +122,4 @@ class TestRenameTableQuery:
     def test_rename_table_query_if_exists(self) -> None:
         """Test rename_table_query with check_if_exists."""
         query, params = rename_table_query("users", "customers", check_if_exists=True)
-        # Note: The current implementation has IF EXISTS after RENAME TO
-        # which is incorrect SQL syntax. This test documents the current behavior.
-        assert "ALTER TABLE users RENAME TO IF EXISTS customers" == query
+        assert query == "ALTER TABLE IF EXISTS users RENAME TO customers"

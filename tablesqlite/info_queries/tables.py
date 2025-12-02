@@ -27,15 +27,17 @@ def validate_table_name(
 
     def decorator(func: Callable) -> Callable:
         def wrapper(*args: Any, **kwargs: Any) -> Any:
-            table_name = args[table_name_pos]
-            if already_validated_pos is not None:
-                already_validated = args[already_validated_pos]
-                validate = (
-                    already_validated if isinstance(already_validated, bool) else False
-                )
-            else:
-                validate = True
-            if validate:
+            table_name = kwargs.get("table_name")
+            if table_name is None and len(args) > table_name_pos:
+                table_name = args[table_name_pos]
+
+            already_validated = kwargs.get("already_validated", False)
+            if already_validated_pos is not None and len(args) > already_validated_pos:
+                arg_value = args[already_validated_pos]
+                if isinstance(arg_value, bool):
+                    already_validated = arg_value
+
+            if not already_validated:
                 validate_name(table_name, allow_dot=False)
             return func(*args, **kwargs)
 

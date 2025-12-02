@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.1.7] - 2025-12-02
+
+### Fixed
+
+- Adjusted column and table name validation to raise empty-name errors before character access, respect `allow_number` for numeric identifiers, and honor the `already_validated` flag when decorating table queries.
+- Limited auto-increment detection to single-column INTEGER primary keys to prevent false conflicts for composite keys.
+- Corrected `ALTER TABLE IF EXISTS` rename SQL formatting and documented current expressQL 0.3.7 behaviors in `KNOWN_ISSUES.md`.
+
 ## [0.1.0] - 2025-05-28
 
 ### Added

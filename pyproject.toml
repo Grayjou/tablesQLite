@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tablesqlite"
-version = "0.1.6"
+version = "0.1.7"
 description = "Declarative SQLite table builder and schema manager with integration support for recordsQL."
 readme = "README.md"
 license = { text = "MIT" }
