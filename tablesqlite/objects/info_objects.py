@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Union, Iterable, Dict, List, Set, Optional
-from expressQL import SQLCondition, SQLExpression, col
+from expressql import SQLCondition, SQLExpression, col
 from ..validation import validate_data_type, validate_name, ensure_all_bools
 from .generic import Unknown, unknown, is_undetermined, ensure_quoted
 from ..validation import (validate_database_path, ensure_all_bools, upper_before_bracket,

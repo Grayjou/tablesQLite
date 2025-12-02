@@ -1,7 +1,7 @@
 import re
 from typing import List
 from ..objects import SQLTableInfoBase, SQLColumnInfoBase
-from expressQL import parse_condition, parse_expression
+from expressql import parse_condition, parse_expression
 def parse_sql_schema(schema: str) -> SQLTableInfoBase:
     schema = schema.strip().rstrip(';')
     if not schema.upper().startswith("CREATE TABLE"):
@@ -127,7 +127,7 @@ def main(writer = None):
     register("Columns:")
     for col_ in table_info.columns:
         register(col_.creation_str())
-    from expressQL import cols
+    from expressql import cols
     debt, income, interest = cols("debt", "income", "interest")
     condition = (debt*interest) < (income*12)
     register(f"Condition: {condition.sql_string()}")

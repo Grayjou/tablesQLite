@@ -1,6 +1,6 @@
 from typing import Union, Iterable, List, Dict, Optional, Tuple, Any
 from .objects import SQLTableInfoBase, SQLColumnInfoBase, unknown, Unknown, is_undetermined
-from expressQL import SQLCondition
+from expressql import SQLCondition
 from .action_queries import (
     add_column_query,
     drop_column_query,
