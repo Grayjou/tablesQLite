@@ -191,12 +191,25 @@ class TestParseSqlSchema:
 
     def test_parse_sql_schema_complex(self) -> None:
         """Test parse_sql_schema with complex schema.
-
-        Note: This test is skipped because expressQL's parse_condition doesn't
-        handle complex CHECK constraints with IN expressions containing quotes.
-        This is a limitation of the expressQL library.
         """
+        from expressql import parse_condition, col
+        cond = parse_condition("status IN ('pending', 'completed', 'cancelled')")
+        sql, params = cond.placeholder_pair()
+        assert sql == "status IN (?, ?, ?)"
+        assert set(params) == {'pending', 'completed', 'cancelled'}
+        # expressql does not cause the error, but tablesQLite's parse_sql_schema does.
+        schema_with_default_null_col = """
+        CREATE TABLE tasks (
+            id INTEGER PRIMARY KEY,
+            status TEXT CHECK (status IN ('pending', 'completed', 'cancelled')) DEFAULT 'pending',
+            priority INTEGER DEFAULT 1,
+            due_date TEXT
+        );
+        """
+        #Raises ValueError  Invalid CHECK condition: status IN ('pending', 'completed', 'cancelled'
+        #Error: Column name contains forbidden characters: ['(', "'", "'", ',', "'", "'", ',', "'", "'"]
         pytest.skip(
-            "Known issue: expressQL cannot parse complex CHECK constraints "
-            "with IN expressions"
+            "Known issue: complex CHECK constraints with IN expressions "
+            "containing quotes are not handled"
         )
+        parse_sql_schema(schema_with_default_null_col)

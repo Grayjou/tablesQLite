@@ -152,6 +152,7 @@ else:
 from expressql import parse_condition
 parse_condition("status IN ('pending', 'completed', 'cancelled')")
 # Raises ValueError: Column name contains forbidden characters
+# UPDATE: this error does NOT happen because of expressql, but because of parse_condition not handling quotes
 ```
 
 This affects `tablesqlite`'s ability to parse complex SQL schemas with CHECK constraints.
@@ -166,6 +167,8 @@ This affects `tablesqlite`'s ability to parse complex SQL schemas with CHECK con
 ```python
 from expressql import col
 col("NULL")  # May cause validation issues
+# UPDATE: expressql uses method .isnull(), .isnotnull(), == None, to represent null conditions of null. 
+# A special case could be made at expressql for it to handle col("NULL"), but might not be necessary
 ```
 
 This affects `tablesqlite`'s handling of NULL default values.
