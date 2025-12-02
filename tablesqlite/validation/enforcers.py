@@ -1,77 +1,167 @@
+"""Property enforcement utilities.
+
+This module provides decorators and base classes for enforcing
+property types and validation in data classes.
+"""
+
 from __future__ import annotations
-from .custom_types import ensure_all_bools
+
+from typing import Any, Callable, Dict, Type
+
 from ..objects.generic import is_undetermined
+from .custom_types import ensure_all_bools
 
 
+def keys_exist_in_dict(d: Dict[str, Any], keys: list[str]) -> bool:
+    """Check if all keys exist in a dictionary.
 
-def keys_exist_in_dict(d, keys):
+    Args:
+        d: The dictionary to check.
+        keys: List of keys to check for.
+
+    Returns:
+        True if all keys exist in the dictionary.
+    """
     return all(key in d for key in keys)
 
 
-def add_bool_properties(*attrs: str):
+def add_bool_properties(*attrs: str) -> Callable[[Type], Type]:
+    """Class decorator that dynamically adds boolean properties.
+
+    Adds properties with automatic validation for boolean values.
+
+    Args:
+        *attrs: Names of attributes to add as boolean properties.
+
+    Returns:
+        A class decorator function.
     """
-    Class decorator that dynamically adds boolean properties
-    with automatic validation.
-    """
-    def wrapper(cls):
+
+    def wrapper(cls: Type) -> Type:
         for attr in attrs:
             private_attr = "_" + attr
 
-            def getter(self:BoolContainer, attr=private_attr) -> bool:
+            def getter(self: BoolContainer, attr: str = private_attr) -> bool:
                 return getattr(self, attr)
 
-            def setter(self:BoolContainer, value, attr_name=private_attr) -> None:
+            def setter(
+                self: BoolContainer, value: Any, attr_name: str = private_attr
+            ) -> None:
                 self._set_bool_attr(attr_name, value)
 
             setattr(cls, attr, property(getter, setter))
         return cls
+
     return wrapper
 
-def add_undetermined_properties(**typed_attrs):
+
+def add_undetermined_properties(**typed_attrs: Type) -> Callable[[Type], Type]:
+    """Class decorator that dynamically adds typed or Unknown properties.
+
+    Adds properties which must be either of a specified type or an
+    'Unknown' object (checked via is_undetermined).
+
+    Args:
+        **typed_attrs: Mapping of attribute names to their accepted types.
+
+    Returns:
+        A class decorator function.
     """
-    Class decorator that dynamically adds properties which must be either:
-    - Of a specified type (e.g., int, str), or
-    - An 'Unknown' object (checked via is_undetermined)
-    """
-    def wrapper(cls):
+
+    def wrapper(cls: Type) -> Type:
         for attr_name, accepted_type in typed_attrs.items():
             private_attr = "_" + attr_name
 
-            def getter(self, attr=private_attr):
+            def getter(self: UndeterminedContainer, attr: str = private_attr) -> Any:
                 return getattr(self, attr)
 
-            def setter(self:UndeterminedContainer, value, attr_name=private_attr, accepted_type=accepted_type):
+            def setter(
+                self: UndeterminedContainer,
+                value: Any,
+                attr_name: str = private_attr,
+                accepted_type: Type = accepted_type,
+            ) -> None:
                 self._set_undetermined_attr(attr_name, value, accepted_type)
 
             setattr(cls, attr_name, property(getter, setter))
         return cls
+
     return wrapper
 
 
 class BoolContainer:
-    def _set_bool_attr(self, attr_name: str, value: any):
+    """Base class for objects with boolean properties.
+
+    Provides validation for boolean property setters.
+    """
+
+    def _set_bool_attr(self, attr_name: str, value: Any) -> None:
+        """Set a boolean attribute with validation.
+
+        Args:
+            attr_name: The name of the attribute to set.
+            value: The value to set.
+
+        Raises:
+            ValueError: If the value is not a valid boolean.
+        """
         ensure_all_bools([value], return_false_on_error=False)
         setattr(self, attr_name, value)
 
+
 class UndeterminedContainer:
+    """Base class for objects with typed or Unknown properties.
+
+    Provides validation for properties that can be either a specific
+    type or an 'Unknown' object.
     """
-    A base class for objects that can have attributes which are either
-    of a specific type or an 'Unknown' object.
-    """
-    def _set_undetermined_attr(self, attr_name: str, value: any, accepted_type: type):
-        if not is_undetermined(value) and not isinstance(value, accepted_type)  :
-            raise ValueError(f"Invalid value for '{attr_name}': {value} (must be {accepted_type.__name__} or Unknown)")
+
+    def _set_undetermined_attr(
+        self, attr_name: str, value: Any, accepted_type: Type
+    ) -> None:
+        """Set an attribute that can be typed or Unknown.
+
+        Args:
+            attr_name: The name of the attribute to set.
+            value: The value to set.
+            accepted_type: The accepted type for the value.
+
+        Raises:
+            ValueError: If the value is not of the accepted type or Unknown.
+        """
+        if not is_undetermined(value) and not isinstance(value, accepted_type):
+            raise ValueError(
+                f"Invalid value for '{attr_name}': {value} "
+                f"(must be {accepted_type.__name__} or Unknown)"
+            )
         setattr(self, attr_name, value)
 
+
 class DualContainer(BoolContainer, UndeterminedContainer):
-    """
-    A base class that combines both BoolContainer and UndeterminedContainer.
-    This allows for attributes that can be either boolean or of a specific type,
+    """Base class combining BoolContainer and UndeterminedContainer.
+
+    Allows for attributes that can be either boolean or of a specific type,
     or an 'Unknown' object.
     """
-    def _set_bool_attr(self, attr_name: str, value: any):
+
+    def _set_bool_attr(self, attr_name: str, value: Any) -> None:
+        """Set a boolean attribute with validation.
+
+        Args:
+            attr_name: The name of the attribute to set.
+            value: The value to set.
+        """
         super()._set_bool_attr(attr_name, value)
 
-    def _set_undetermined_attr(self, attr_name: str, value: any, accepted_type: type):
+    def _set_undetermined_attr(
+        self, attr_name: str, value: Any, accepted_type: Type
+    ) -> None:
+        """Set an attribute that can be typed or Unknown.
+
+        Args:
+            attr_name: The name of the attribute to set.
+            value: The value to set.
+            accepted_type: The accepted type for the value.
+        """
         super()._set_undetermined_attr(attr_name, value, accepted_type)
 

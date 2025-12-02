@@ -1,49 +1,87 @@
-#pairs are in the form (query, parameters)
+"""Table information query utilities.
+
+This module provides functions for generating queries to retrieve
+table information from SQLite databases.
+"""
+
+from __future__ import annotations
+
+from typing import Any, Callable
+
 from ..validation import validate_name
 
-def validate_table_name(table_name_pos:int = 0, already_validated_pos:int = None):
-    def decorator(func):
-        def wrapper(*args, **kwargs):
+
+def validate_table_name(
+    table_name_pos: int = 0,
+    already_validated_pos: int | None = None,
+) -> Callable:
+    """Decorator to validate table names in function arguments.
+
+    Args:
+        table_name_pos: Position of the table name argument.
+        already_validated_pos: Position of the already_validated flag argument.
+
+    Returns:
+        A decorator function.
+    """
+
+    def decorator(func: Callable) -> Callable:
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
             table_name = args[table_name_pos]
             if already_validated_pos is not None:
                 already_validated = args[already_validated_pos]
-                validate = already_validated if isinstance(already_validated, bool) else False
+                validate = (
+                    already_validated if isinstance(already_validated, bool) else False
+                )
             else:
-                validate =  True
+                validate = True
             if validate:
-                validate_name(table_name, allow_dot= False)
+                validate_name(table_name, allow_dot=False)
             return func(*args, **kwargs)
+
         return wrapper
+
     return decorator
 
-def get_all_tables_query(*args, **kwargs):
-    """
-    Returns a SQL query to retrieve all table names from the SQLite database.
+
+def get_all_tables_query() -> tuple[str, list[Any]]:
+    """Get a SQL query to retrieve all table names from the database.
+
+    Returns:
+        A tuple of (SQL query string, list of parameters).
     """
     return "SELECT name FROM sqlite_master WHERE type='table'", []
 
+
 @validate_table_name(0, 1)
-def get_table_info_query(table_name, already_validated=False):
-    """
-    Returns a SQL query to retrieve information about a specific table in the SQLite database.
+def get_table_info_query(
+    table_name: str,
+    already_validated: bool = False,
+) -> tuple[str, list[Any]]:
+    """Get a SQL query to retrieve table information.
 
     Args:
-        table_name (str): The name of the table to retrieve information for.
+        table_name: The name of the table to get information for.
+        already_validated: Whether the table name has been validated.
 
     Returns:
-        tuple: A tuple containing the SQL query and a list of parameters.
+        A tuple of (SQL query string, list of parameters).
     """
     return f"PRAGMA table_info('{table_name}')", []
 
+
 @validate_table_name(0, 1)
-def count_rows_query(table_name, already_validated=False):
-    """
-    Returns a SQL query to count the number of rows in a specific table.
+def count_rows_query(
+    table_name: str,
+    already_validated: bool = False,
+) -> tuple[str, list[Any]]:
+    """Get a SQL query to count rows in a table.
 
     Args:
-        table_name (str): The name of the table to count rows for.
+        table_name: The name of the table to count rows for.
+        already_validated: Whether the table name has been validated.
 
     Returns:
-        tuple: A tuple containing the SQL query and a list of parameters.
+        A tuple of (SQL query string, list of parameters).
     """
     return f"SELECT COUNT(*) FROM '{table_name}'", []
