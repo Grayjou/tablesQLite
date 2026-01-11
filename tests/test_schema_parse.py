@@ -192,7 +192,7 @@ class TestParseSqlSchema:
     def test_parse_sql_schema_complex(self) -> None:
         """Test parse_sql_schema with complex schema.
         """
-        from expressql import parse_condition, col
+        from expressql import parse_condition
         cond = parse_condition("status IN ('pending', 'completed', 'cancelled')")
         sql, params = cond.placeholder_pair()
         assert sql == "status IN (?, ?, ?)"

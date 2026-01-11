@@ -5,8 +5,6 @@ This module provides functions and classes for validating SQL data types.
 
 from __future__ import annotations
 
-from typing import Optional, Set, Tuple
-
 from sortedcontainers import SortedDict
 
 
@@ -63,7 +61,7 @@ ALL_TYPES = (
 )
 
 
-def bracket_tuple_from_str(data_str: str) -> Tuple[str, Tuple[str, ...]]:
+def bracket_tuple_from_str(data_str: str) -> tuple[str, tuple[str, ...]]:
     """Parse a data type string into a tuple of (type, args).
 
     Args:
@@ -85,7 +83,7 @@ PLACEHOLDER_INT_KEYS = {"size", "fsp", "p"}
 
 def match_bracket_tuple(
     data_str: str,
-    pairs: Optional[Set[Tuple[str, Tuple[str, ...]]]] = None,
+    pairs: set[tuple[str, tuple[str, ...]]] | None = None,
 ) -> bool:
     """Check if a data type string matches any of the predefined types.
 
@@ -186,7 +184,7 @@ class Validator(SortedDict):
         self.pop(type_.upper(), None)
 
 
-_validator: Optional[Validator] = None
+_validator: Validator | None = None
 
 
 def get_validator() -> Validator:

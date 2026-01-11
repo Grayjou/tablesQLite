@@ -15,6 +15,7 @@ A declarative SQLite table builder and schema manager for Python. Define your da
 - **Schema Parsing**: Parse existing SQL schema strings back into Python objects
 - **Type Safety**: Full type hints throughout the codebase
 - **Integration Ready**: Seamlessly integrates with [recordsQL](https://pypi.org/project/recordsQL) for DML operations
+- **Utility Functions**: Helper functions for type conversion, foreign key validation, and schema migrations
 
 ## Installation
 
@@ -138,6 +139,58 @@ query, params = table.drop_column_query("name")
 # Rename a column
 query, params = table.rename_column_query("email", "user_email")
 # ALTER TABLE "users" RENAME COLUMN "email" TO "user_email"
+```
+
+### Utility Functions
+
+tablesQLite provides helpful utility functions for common tasks:
+
+```python
+from enum import IntEnum
+from tablesqlite import (
+    convert_enum_value,
+    validate_foreign_keys,
+    generate_migration,
+    SQLTableInfo,
+    SQLColumnInfo
+)
+
+# Type conversion helper for IntEnum
+class Status(IntEnum):
+    PENDING = 1
+    ACTIVE = 2
+    COMPLETED = 3
+
+status = convert_enum_value("2", Status)  # Returns Status.ACTIVE
+status = convert_enum_value(1, Status)    # Returns Status.PENDING
+
+# Validate foreign key relationships
+users = SQLTableInfo("users", [SQLColumnInfo("id", "INTEGER", primary_key=True)])
+posts = SQLTableInfo("posts", [
+    SQLColumnInfo("id", "INTEGER", primary_key=True),
+    SQLColumnInfo("user_id", "INTEGER", foreign_key={"table": "users", "column": "id"})
+])
+
+tables = {"users": users, "posts": posts}
+errors = validate_foreign_keys(posts, tables)
+if errors:
+    print("Foreign key errors:", errors)
+
+# Generate migration statements
+old_table = SQLTableInfo("users", [
+    SQLColumnInfo("id", "INTEGER", primary_key=True),
+    SQLColumnInfo("name", "TEXT")
+])
+new_table = SQLTableInfo("users", [
+    SQLColumnInfo("id", "INTEGER", primary_key=True),
+    SQLColumnInfo("name", "TEXT"),
+    SQLColumnInfo("email", "TEXT")
+])
+
+migrations = generate_migration(old_table, new_table)
+for sql, params in migrations:
+    print(sql)
+# Output: ALTER TABLE "users" ADD COLUMN "email" TEXT
 ```
 
 ## API Reference

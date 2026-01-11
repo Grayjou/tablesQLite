@@ -6,10 +6,10 @@ particularly for boolean values.
 
 from __future__ import annotations
 
-from typing import Iterable, Union
+from collections.abc import Iterable
 
 
-def ensure_bool(value: Union[bool, str, int], *, return_false_on_error: bool = False) -> bool:
+def ensure_bool(value: bool | str | int, *, return_false_on_error: bool = False) -> bool:
     """Ensure the value is a boolean.
 
     Args:
@@ -40,7 +40,7 @@ def ensure_bool(value: Union[bool, str, int], *, return_false_on_error: bool = F
 
 
 def ensure_all_bools(
-    values: Iterable[Union[bool, str, int]],
+    values: Iterable[bool | str | int],
     *,
     return_false_on_error: bool = False,
 ) -> list[bool]:
