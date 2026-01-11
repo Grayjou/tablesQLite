@@ -6,7 +6,8 @@ table information from SQLite databases.
 
 from __future__ import annotations
 
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 from ..validation import validate_name
 

@@ -7,7 +7,7 @@ into SQLTableInfoBase objects.
 from __future__ import annotations
 
 import re
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from expressql import parse_condition, parse_expression
 
@@ -42,8 +42,8 @@ def parse_sql_schema(schema: str) -> SQLTableInfoBase:
     inside = schema[schema.find("(") + 1 : schema.rfind(")")]
     parts = re.split(r",(?![^()]*\))", inside)
 
-    column_defs: List[str] = []
-    table_constraints: List[str] = []
+    column_defs: list[str] = []
+    table_constraints: list[str] = []
 
     for part in parts:
         part = part.strip()
@@ -52,8 +52,8 @@ def parse_sql_schema(schema: str) -> SQLTableInfoBase:
         else:
             column_defs.append(part)
 
-    columns: List[SQLColumnInfoBase] = []
-    foreign_keys: List[Dict[str, Any]] = []
+    columns: list[SQLColumnInfoBase] = []
+    foreign_keys: list[dict[str, Any]] = []
 
     for col_def in column_defs:
         tokens = re.split(r"\s+", col_def, maxsplit=2)
@@ -72,7 +72,7 @@ def parse_sql_schema(schema: str) -> SQLTableInfoBase:
         )
         unique = re.search(r"\bUNIQUE\b", constraints, re.IGNORECASE) is not None
 
-        default_value: Optional[Union[str, int, float, bool]] = None
+        default_value: str | int | float | bool | None = None
         match_default = re.search(
             r"\bDEFAULT\s+((?:'[^']*'|\"[^\"]*\"|\S+))",
             constraints,
@@ -97,7 +97,7 @@ def parse_sql_schema(schema: str) -> SQLTableInfoBase:
             constraints,
             re.IGNORECASE,
         )
-        foreign_key: Optional[Dict[str, str]] = None
+        foreign_key: dict[str, str] | None = None
         if fk_match:
             foreign_key = {
                 "table": fk_match.group(1),

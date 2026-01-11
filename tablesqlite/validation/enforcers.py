@@ -6,13 +6,14 @@ property types and validation in data classes.
 
 from __future__ import annotations
 
-from typing import Any, Callable, Dict, Type
+from collections.abc import Callable
+from typing import Any
 
 from ..objects.generic import is_undetermined
 from .custom_types import ensure_all_bools
 
 
-def keys_exist_in_dict(d: Dict[str, Any], keys: list[str]) -> bool:
+def keys_exist_in_dict(d: dict[str, Any], keys: list[str]) -> bool:
     """Check if all keys exist in a dictionary.
 
     Args:
@@ -25,7 +26,7 @@ def keys_exist_in_dict(d: Dict[str, Any], keys: list[str]) -> bool:
     return all(key in d for key in keys)
 
 
-def add_bool_properties(*attrs: str) -> Callable[[Type], Type]:
+def add_bool_properties(*attrs: str) -> Callable[[type], type]:
     """Class decorator that dynamically adds boolean properties.
 
     Adds properties with automatic validation for boolean values.
@@ -37,7 +38,7 @@ def add_bool_properties(*attrs: str) -> Callable[[Type], Type]:
         A class decorator function.
     """
 
-    def wrapper(cls: Type) -> Type:
+    def wrapper(cls: type) -> type:
         for attr in attrs:
             private_attr = "_" + attr
 
@@ -55,7 +56,7 @@ def add_bool_properties(*attrs: str) -> Callable[[Type], Type]:
     return wrapper
 
 
-def add_undetermined_properties(**typed_attrs: Type) -> Callable[[Type], Type]:
+def add_undetermined_properties(**typed_attrs: type) -> Callable[[type], type]:
     """Class decorator that dynamically adds typed or Unknown properties.
 
     Adds properties which must be either of a specified type or an
@@ -68,7 +69,7 @@ def add_undetermined_properties(**typed_attrs: Type) -> Callable[[Type], Type]:
         A class decorator function.
     """
 
-    def wrapper(cls: Type) -> Type:
+    def wrapper(cls: type) -> type:
         for attr_name, accepted_type in typed_attrs.items():
             private_attr = "_" + attr_name
 
@@ -79,7 +80,7 @@ def add_undetermined_properties(**typed_attrs: Type) -> Callable[[Type], Type]:
                 self: UndeterminedContainer,
                 value: Any,
                 attr_name: str = private_attr,
-                accepted_type: Type = accepted_type,
+                accepted_type: type = accepted_type,
             ) -> None:
                 self._set_undetermined_attr(attr_name, value, accepted_type)
 
@@ -117,7 +118,7 @@ class UndeterminedContainer:
     """
 
     def _set_undetermined_attr(
-        self, attr_name: str, value: Any, accepted_type: Type
+        self, attr_name: str, value: Any, accepted_type: type
     ) -> None:
         """Set an attribute that can be typed or Unknown.
 
@@ -154,7 +155,7 @@ class DualContainer(BoolContainer, UndeterminedContainer):
         super()._set_bool_attr(attr_name, value)
 
     def _set_undetermined_attr(
-        self, attr_name: str, value: Any, accepted_type: Type
+        self, attr_name: str, value: Any, accepted_type: type
     ) -> None:
         """Set an attribute that can be typed or Unknown.
 

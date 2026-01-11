@@ -6,7 +6,8 @@ the base classes with additional query generation capabilities.
 
 from __future__ import annotations
 
-from typing import Any, Iterable, Optional, Union
+from collections.abc import Iterable
+from typing import Any
 
 from expressql import SQLCondition
 
@@ -51,13 +52,13 @@ class SQLColumnInfo(SQLColumnInfoBase):
         name: str,
         data_type: str,
         not_null: bool = False,
-        default_value: Union[str, int, float, Unknown] = unknown,
+        default_value: str | int | float | Unknown = unknown,
         primary_key: bool = False,
-        cid: Union[int, Unknown] = unknown,
+        cid: int | Unknown = unknown,
         *,
         unique: bool = False,
-        foreign_key: Optional[dict[str, str]] = None,
-        check: Optional[SQLCondition] = None,
+        foreign_key: dict[str, str] | None = None,
+        check: SQLCondition | None = None,
     ) -> None:
         """Initialize a SQLColumnInfo instance."""
         super().__init__(
@@ -74,10 +75,10 @@ class SQLColumnInfo(SQLColumnInfoBase):
 
     def _resolve_table_name(
         self,
-        table_name: Optional[str],
+        table_name: str | None,
         check_in_tables: bool = False,
         solve_by: str = "raise",
-    ) -> Optional[str]:
+    ) -> str | None:
         """Resolve the table name for column operations.
 
         Args:
@@ -120,7 +121,7 @@ class SQLColumnInfo(SQLColumnInfoBase):
 
     def drop_query(
         self,
-        table_name: Optional[str] = None,
+        table_name: str | None = None,
         check_if_possible: bool = False,
         check_in_tables: bool = False,
         *,
@@ -147,7 +148,7 @@ class SQLColumnInfo(SQLColumnInfoBase):
     def rename_query(
         self,
         new_name: str,
-        table_name: Optional[str] = None,
+        table_name: str | None = None,
         check_if_possible: bool = False,
         check_in_tables: bool = False,
         *,
@@ -174,7 +175,7 @@ class SQLColumnInfo(SQLColumnInfoBase):
 
     def add_query(
         self,
-        table_name: Optional[str] = None,
+        table_name: str | None = None,
         check_if_possible: bool = False,
         check_in_tables: bool = False,
         *,
@@ -251,9 +252,9 @@ class SQLTableInfo(SQLTableInfoBase):
     def __init__(
         self,
         name: str,
-        columns: Union[Iterable[SQLColumnInfo], Unknown] = unknown,
-        database_path: Union[str, Unknown] = unknown,
-        foreign_keys: Optional[list[dict[str, Union[list[str], str]]]] = None,
+        columns: Iterable[SQLColumnInfo] | Unknown = unknown,
+        database_path: str | Unknown = unknown,
+        foreign_keys: list[dict[str, list[str] | str]] | None = None,
     ) -> None:
         """Initialize a SQLTableInfo instance."""
         super().__init__(name, columns, database_path, foreign_keys)
@@ -354,7 +355,7 @@ class SQLTableInfo(SQLTableInfoBase):
         )
 
     @classmethod
-    def from_sql_schema(cls, schema: Union[str, list[dict[str, Any]]]) -> SQLTableInfo:
+    def from_sql_schema(cls, schema: str | list[dict[str, Any]]) -> SQLTableInfo:
         """Create a SQLTableInfo from a SQL schema string.
 
         Args:
@@ -404,7 +405,7 @@ class SQLTableInfo(SQLTableInfoBase):
 
     @staticmethod
     def validate_columns(
-        columns: Union[Iterable[SQLColumnInfoBase], Unknown],
+        columns: Iterable[SQLColumnInfoBase] | Unknown,
     ) -> list[SQLColumnInfo]:
         """Validate and convert columns to SQLColumnInfo instances.
 
