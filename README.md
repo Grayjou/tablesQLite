@@ -260,6 +260,34 @@ add_query_methods()
 - [expressQL](https://pypi.org/project/expressQL) - SQL expression builder
 - [sortedcontainers](https://pypi.org/project/sortedcontainers) - Sorted container types
 
+## Documentation
+
+Full documentation is available online and can be built locally.
+
+### Online Documentation
+
+Visit the [full documentation](https://github.com/Grayjou/tablesqlite#readme) for detailed guides and API reference.
+
+### Building Documentation Locally
+
+```bash
+# Install documentation dependencies
+pip install tablesqlite[docs]
+
+# Build HTML documentation
+cd docs
+make html
+
+# Open docs/_build/html/index.html in your browser
+```
+
+The documentation includes:
+- Installation guide
+- Quick start tutorial
+- Comprehensive usage guide
+- Complete API reference
+- Integration examples with recordsQL
+
 ## Development
 
 ```bash
