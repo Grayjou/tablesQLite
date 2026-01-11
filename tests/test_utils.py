@@ -330,11 +330,13 @@ class TestGenerateMigration:
 
         # Should have a comment about SQLite limitation
         assert len(migrations) >= 1
-        result = any(
+        has_column_modification_warning = any(
             "Cannot modify column" in m[0] or "recreation" in m[0]
             for m in migrations
         )
-        assert result
+        assert has_column_modification_warning, (
+            "Expected migration to include warning about column modification"
+        )
 
     def test_generate_migration_no_changes(self) -> None:
         """Test migration generation when there are no changes."""
@@ -377,11 +379,13 @@ class TestGenerateMigration:
 
         # Should have a comment about foreign key changes
         assert len(migrations) >= 1
-        result = any(
+        has_foreign_key_recreation_warning = any(
             "Foreign key" in m[0] and "recreation" in m[0]
             for m in migrations
         )
-        assert result
+        assert has_foreign_key_recreation_warning, (
+            "Expected migration to include warning about foreign key changes"
+        )
 
     def test_generate_migration_complex_changes(self) -> None:
         """Test migration generation with multiple types of changes."""
