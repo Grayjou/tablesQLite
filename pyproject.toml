@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tablesqlite"
-version = "0.1.7"
+version = "0.1.8"
 description = "Declarative SQLite table builder and schema manager with integration support for recordsQL."
 readme = "README.md"
 license = { text = "MIT" }
@@ -61,7 +61,7 @@ docs = [
 "Changelog" = "https://github.com/Grayjou/tablesqlite/blob/main/CHANGELOG.md"
 
 [tool.setuptools]
-packages = ["tablesqlite"]
+packages = { find = { where = ["."], include = ["tablesqlite*"] } }
 include-package-data = true
 
 [tool.setuptools.package-data]
