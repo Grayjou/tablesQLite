@@ -4,6 +4,8 @@ This module provides helper functions for type conversion, foreign key validatio
 and schema comparison operations.
 """
 
+from __future__ import annotations
+
 from enum import IntEnum
 from typing import TYPE_CHECKING, Any
 
@@ -63,8 +65,8 @@ def convert_enum_value(value: Any, enum_class: type[IntEnum]) -> IntEnum:
 
 
 def validate_foreign_keys(
-    table: "SQLTableInfo",
-    available_tables: dict[str, "SQLTableInfo"],
+    table: SQLTableInfo,
+    available_tables: dict[str, SQLTableInfo],
 ) -> list[str]:
     """Validate that all foreign key references point to existing tables.
 
@@ -124,8 +126,8 @@ def validate_foreign_keys(
 
 
 def generate_migration(
-    old_table: "SQLTableInfo",
-    new_table: "SQLTableInfo",
+    old_table: SQLTableInfo,
+    new_table: SQLTableInfo,
 ) -> list[tuple[str, list[Any]]]:
     """Generate SQL statements to migrate from old_table to new_table.
 

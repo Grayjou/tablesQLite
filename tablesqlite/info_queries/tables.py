@@ -4,15 +4,17 @@ This module provides functions for generating queries to retrieve
 table information from SQLite databases.
 """
 
+from __future__ import annotations
+
 from collections.abc import Callable
-from typing import Any, Union
+from typing import Any
 
 from ..validation import validate_name
 
 
 def validate_table_name(
     table_name_pos: int = 0,
-    already_validated_pos: Union[int, None] = None,
+    already_validated_pos: int | None = None,
 ) -> Callable:
     """Decorator to validate table names in function arguments.
 

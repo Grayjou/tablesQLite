@@ -4,16 +4,18 @@ This module provides functions for generating SQL statements for
 column operations like add, drop, and rename.
 """
 
+from __future__ import annotations
+
 from collections.abc import Callable
-from typing import Any, Union
+from typing import Any
 
 from ..objects import SQLColumnInfoBase, SQLTableInfoBase
 from ..objects.generic import ensure_quoted
 
 
 def _extract_table_name(
-    table: Union[str, SQLTableInfoBase],
-    check: Union[Callable[[SQLTableInfoBase], None], None] = None,
+    table: str | SQLTableInfoBase,
+    check: Callable[[SQLTableInfoBase], None] | None = None,
 ) -> str:
     """Extract the table name from a string or SQLTableInfoBase.
 
@@ -37,7 +39,7 @@ def _extract_table_name(
 
 
 def add_column_query(
-    table: Union[SQLTableInfoBase, str],
+    table: SQLTableInfoBase | str,
     column: SQLColumnInfoBase,
     check_if_possible: bool = False,
 ) -> tuple[str, list[Any]]:
@@ -70,7 +72,7 @@ def add_column_query(
 
 
 def drop_column_query(
-    table: Union[SQLTableInfoBase, str],
+    table: SQLTableInfoBase | str,
     column_name: str,
     check_if_possible: bool = False,
 ) -> tuple[str, list[Any]]:
@@ -100,7 +102,7 @@ def drop_column_query(
 
 
 def rename_column_query(
-    table: Union[SQLTableInfoBase, str],
+    table: SQLTableInfoBase | str,
     old_name: str,
     new_name: str,
     check_if_possible: bool = False,
