@@ -7,10 +7,30 @@ property types and validation in data classes.
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import Any
+from typing import Any, Union, get_args, get_origin
 
 from ..objects.generic import is_undetermined
 from .custom_types import ensure_all_bools
+
+
+def _is_instance_of_type(value: Any, accepted_type: type) -> bool:
+    """Check if a value is an instance of the accepted type, handling Union types.
+
+    In Python 3.9, Union types cannot be used directly with isinstance(),
+    so we need to handle them specially.
+
+    Args:
+        value: The value to check.
+        accepted_type: The type to check against.
+
+    Returns:
+        True if the value is an instance of the accepted type.
+    """
+    # Handle Union types specially for Python 3.9 compatibility
+    if get_origin(accepted_type) is Union:
+        return any(isinstance(value, arg) for arg in get_args(accepted_type))
+    else:
+        return isinstance(value, accepted_type)
 
 
 def keys_exist_in_dict(d: dict[str, Any], keys: list[str]) -> bool:
@@ -130,7 +150,9 @@ class UndeterminedContainer:
         Raises:
             ValueError: If the value is not of the accepted type or Unknown.
         """
-        if not is_undetermined(value) and not isinstance(value, accepted_type):
+        if not is_undetermined(value) and not _is_instance_of_type(
+            value, accepted_type
+        ):
             raise ValueError(
                 f"Invalid value for '{attr_name}': {value} "
                 f"(must be {accepted_type.__name__} or Unknown)"
