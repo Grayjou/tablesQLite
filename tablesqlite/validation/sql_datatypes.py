@@ -111,7 +111,7 @@ def match_bracket_tuple(
         if len(args) > len(expected_args):
             return False
 
-        for arg, expected in zip(args, expected_args):
+        for arg, expected in zip(args, expected_args, strict=False):
             if expected == "...":
                 continue
             if expected in PLACEHOLDER_INT_KEYS and not arg.isdigit():
@@ -142,7 +142,7 @@ class Validator(SortedDict):
 
     def __init__(self) -> None:
         """Initialize the validator with default SQL data types."""
-        super().__init__(set(bracket_tuple_from_str(string) for string in ALL_TYPES))
+        super().__init__({bracket_tuple_from_str(string) for string in ALL_TYPES})
 
     def validate_type(self, data_str: str) -> bool:
         """Validate if the given data type string is valid.

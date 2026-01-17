@@ -190,8 +190,7 @@ class TestParseSqlSchema:
         assert result.columns[1].not_null is True
 
     def test_parse_sql_schema_complex(self) -> None:
-        """Test parse_sql_schema with complex schema.
-        """
+        """Test parse_sql_schema with complex schema."""
         from expressql import parse_condition
         cond = parse_condition("status IN ('pending', 'completed', 'cancelled')")
         sql, params = cond.placeholder_pair()
@@ -201,13 +200,17 @@ class TestParseSqlSchema:
         schema_with_default_null_col = """
         CREATE TABLE tasks (
             id INTEGER PRIMARY KEY,
-            status TEXT CHECK (status IN ('pending', 'completed', 'cancelled')) DEFAULT 'pending',
+            status TEXT CHECK (
+                status IN ('pending', 'completed', 'cancelled')
+            ) DEFAULT 'pending',
             priority INTEGER DEFAULT 1,
             due_date TEXT
         );
         """
-        #Raises ValueError  Invalid CHECK condition: status IN ('pending', 'completed', 'cancelled'
-        #Error: Column name contains forbidden characters: ['(', "'", "'", ',', "'", "'", ',', "'", "'"]
+        # Raises ValueError: Invalid CHECK condition: status IN
+        # ('pending', 'completed', 'cancelled'
+        # Error: Column name contains forbidden characters:
+        # ['(', "'", "'", ',', "'", "'", ',', "'", "'"]
         pytest.skip(
             "Known issue: complex CHECK constraints with IN expressions "
             "containing quotes are not handled"

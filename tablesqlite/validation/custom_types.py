@@ -9,7 +9,9 @@ from __future__ import annotations
 from collections.abc import Iterable
 
 
-def ensure_bool(value: bool | str | int, *, return_false_on_error: bool = False) -> bool:
+def ensure_bool(
+    value: bool | str | int, *, return_false_on_error: bool = False
+) -> bool:
     """Ensure the value is a boolean.
 
     Args:

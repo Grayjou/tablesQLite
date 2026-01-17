@@ -128,7 +128,8 @@ def validate_name(
                     )
                 if part[0].isdigit() and not allow_number:
                     raise ValueError(
-                        f"Each part of a dotted name must not start with a digit: {part}"
+                        "Each part of a dotted name must not start with a digit: "
+                        f"{part}"
                     )
 
     if validate_words:

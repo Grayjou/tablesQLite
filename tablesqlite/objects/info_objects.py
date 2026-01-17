@@ -8,7 +8,7 @@ constraints like NOT NULL, DEFAULT, CHECK, UNIQUE, PRIMARY KEY, and FOREIGN KEY.
 from __future__ import annotations
 
 from collections.abc import Iterable
-from typing import Any, Union
+from typing import Any
 
 from expressql import SQLCondition, SQLExpression, col
 
@@ -86,7 +86,7 @@ def format_default_value(val: str | int | float | SQLExpression) -> str:
 
 
 @add_bool_properties("not_null", "primary_key", "unique")
-@add_undetermined_properties(cid=int, default_value=Union[str, int, float, SQLExpression])
+@add_undetermined_properties(cid=int, default_value=str | int | float | SQLExpression)
 class SQLColumnInfoBase(DualContainer):
     """Base class representing metadata for a SQL column.
 
@@ -722,7 +722,8 @@ class SQLTableInfoBase(UndeterminedContainer):
             raise TypeError("New column must be an instance of SQLColumnInfoBase")
         if column.name in self._column_dict:
             raise ValueError(
-                f"Column with name '{column.name}' already exists in table '{self.name}'"
+                f"Column with name '{column.name}' already exists in "
+                f"table '{self.name}'"
             )
         if column.auto_increment and self.auto_increment_column is not None:
             raise ValueError("Only one column can be auto increment in a table")
@@ -789,18 +790,16 @@ class SQLTableInfoBase(UndeterminedContainer):
             for col in self.columns
         ]
 
-        # Composite PK support
         if use_composite_pk:
-            pk_clause = (
-                f"PRIMARY KEY ({', '.join(ensure_quoted(col.name) for col in primary_keys)})"
-            )
+            pk_names = ', '.join(ensure_quoted(col.name) for col in primary_keys)
+            pk_clause = f"PRIMARY KEY ({pk_names})"
             column_defs.append(pk_clause)
 
         extra_column_defs: set[str] = set()
 
         # Single-column FKs from columns
-        for col in self.columns:
-            fk_clause = col.foreign_key_clause()
+        for column in self.columns:
+            fk_clause = column.foreign_key_clause()
             if fk_clause:
                 extra_column_defs.add(fk_clause)
 
@@ -1045,6 +1044,7 @@ class SQLTableInfoBase(UndeterminedContainer):
 
 
 def main(writer = None):
+    """Demo function to create and display sample SQL table definitions."""
     if writer is None:
         register = print
     else:

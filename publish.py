@@ -1,6 +1,6 @@
+import os
 import subprocess
 import sys
-import os
 
 # Path to your PowerShell script
 script_path = os.path.join(os.path.dirname(__file__), 'publish.ps1')
