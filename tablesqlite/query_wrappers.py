@@ -4,10 +4,8 @@ This module provides SQLColumnInfo and SQLTableInfo classes that extend
 the base classes with additional query generation capabilities.
 """
 
-from __future__ import annotations
-
 from collections.abc import Iterable
-from typing import Any
+from typing import Any, Union
 
 from expressql import SQLCondition
 
@@ -52,13 +50,13 @@ class SQLColumnInfo(SQLColumnInfoBase):
         name: str,
         data_type: str,
         not_null: bool = False,
-        default_value: str | int | float | Unknown = unknown,
+        default_value: Union[str, int, float, Unknown] = unknown,
         primary_key: bool = False,
-        cid: int | Unknown = unknown,
+        cid: Union[int, Unknown] = unknown,
         *,
         unique: bool = False,
-        foreign_key: dict[str, str] | None = None,
-        check: SQLCondition | None = None,
+        foreign_key: Union[dict[str, str], None] = None,
+        check: Union[SQLCondition, None] = None,
     ) -> None:
         """Initialize a SQLColumnInfo instance."""
         super().__init__(
@@ -73,12 +71,12 @@ class SQLColumnInfo(SQLColumnInfoBase):
             check=check,
         )
 
-    def _resolve_table_name(
+    def resolve_table_name(
         self,
-        table_name: str | None,
+        table_name: Union[str, None],
         check_in_tables: bool = False,
         solve_by: str = "raise",
-    ) -> str | None:
+    ) -> Union[str, None]:
         """Resolve the table name for column operations.
 
         Args:
@@ -94,17 +92,17 @@ class SQLColumnInfo(SQLColumnInfoBase):
         """
         if table_name is not None:
             if check_in_tables and table_name not in self.table_names:
-                match solve_by.lower():
-                    case "raise":
-                        raise ValueError(
-                            f"Table '{table_name}' not found in column's linked tables."
-                        )
-                    case "ignore":
-                        return table_name
-                    case "none":
-                        return None
-                    case _:
-                        raise ValueError(f"Invalid solve_by value: {solve_by}")
+                solve_by_lower = solve_by.lower()
+                if solve_by_lower == "raise":
+                    raise ValueError(
+                        f"Table '{table_name}' not found in column's linked tables."
+                    )
+                elif solve_by_lower == "ignore":
+                    return table_name
+                elif solve_by_lower == "none":
+                    return None
+                else:
+                    raise ValueError(f"Invalid solve_by value: {solve_by}")
             return table_name
 
         table_count = len(self._tables)
@@ -121,7 +119,7 @@ class SQLColumnInfo(SQLColumnInfoBase):
 
     def drop_query(
         self,
-        table_name: str | None = None,
+        table_name: Union[str, None] = None,
         check_if_possible: bool = False,
         check_in_tables: bool = False,
         *,
@@ -148,7 +146,7 @@ class SQLColumnInfo(SQLColumnInfoBase):
     def rename_query(
         self,
         new_name: str,
-        table_name: str | None = None,
+        table_name: Union[str, None] = None,
         check_if_possible: bool = False,
         check_in_tables: bool = False,
         *,
@@ -200,7 +198,7 @@ class SQLColumnInfo(SQLColumnInfoBase):
         )
 
     @classmethod
-    def from_super(cls, column: SQLColumnInfoBase) -> SQLColumnInfo:
+    def from_super(cls, column: SQLColumnInfoBase) -> "SQLColumnInfo":
         """Create a SQLColumnInfo from a SQLColumnInfoBase instance.
 
         Args:
@@ -222,7 +220,7 @@ class SQLColumnInfo(SQLColumnInfoBase):
         )
 
     @classmethod
-    def ensure_subclass(cls, column: SQLColumnInfoBase) -> SQLColumnInfo:
+    def ensure_subclass(cls, column: SQLColumnInfoBase) -> "SQLColumnInfo":
         """Ensure the column is a SQLColumnInfo instance.
 
         Args:
@@ -338,7 +336,7 @@ class SQLTableInfo(SQLTableInfoBase):
         )
 
     @classmethod
-    def from_super(cls, table: SQLTableInfoBase) -> SQLTableInfo:
+    def from_super(cls, table: SQLTableInfoBase) -> "SQLTableInfo":
         """Create a SQLTableInfo from a SQLTableInfoBase instance.
 
         Args:
@@ -355,7 +353,7 @@ class SQLTableInfo(SQLTableInfoBase):
         )
 
     @classmethod
-    def from_sql_schema(cls, schema: str | list[dict[str, Any]]) -> SQLTableInfo:
+    def from_sql_schema(cls, schema: str | list[dict[str, Any]]) -> "SQLTableInfo":
         """Create a SQLTableInfo from a SQL schema string.
 
         Args:

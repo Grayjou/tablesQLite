@@ -4,13 +4,12 @@ This module provides functions for ensuring values are of expected types,
 particularly for boolean values.
 """
 
-from __future__ import annotations
-
 from collections.abc import Iterable
+from typing import Union
 
 
 def ensure_bool(
-    value: bool | str | int, *, return_false_on_error: bool = False
+    value: Union[bool, str, int], *, return_false_on_error: bool = False
 ) -> bool:
     """Ensure the value is a boolean.
 
@@ -42,7 +41,7 @@ def ensure_bool(
 
 
 def ensure_all_bools(
-    values: Iterable[bool | str | int],
+    values: Iterable[Union[bool, str, int]],
     *,
     return_false_on_error: bool = False,
 ) -> list[bool]:

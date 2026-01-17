@@ -11,7 +11,7 @@ license = { text = "MIT" }
 authors = [
     { name = "Grayjou", email = "cgrayjou@gmail.com" }
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.8"
 keywords = [
     "sqlite",
     "sql",
@@ -28,6 +28,8 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -37,7 +39,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "expressQL>=0.3.6",
+    "expressQL>=1.0.0",
     "sortedcontainers>=2.4.0",
 ]
 
@@ -81,7 +83,7 @@ strict_equality = true
 extra_checks = true
 
 [tool.ruff]
-target-version = "py310"
+target-version = "py38"
 line-length = 88
 
 [tool.ruff.lint]

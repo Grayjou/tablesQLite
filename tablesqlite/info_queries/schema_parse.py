@@ -4,10 +4,8 @@ This module provides functions for parsing SQL CREATE TABLE statements
 into SQLTableInfoBase objects.
 """
 
-from __future__ import annotations
-
 import re
-from typing import Any
+from typing import Any, Union
 
 from expressql import parse_condition, parse_expression
 
@@ -72,7 +70,7 @@ def parse_sql_schema(schema: str) -> SQLTableInfoBase:
         )
         unique = re.search(r"\bUNIQUE\b", constraints, re.IGNORECASE) is not None
 
-        default_value: str | int | float | bool | None = None
+        default_value: Union[str, int, float, bool, None] = None
         match_default = re.search(
             r"\bDEFAULT\s+((?:'[^']*'|\"[^\"]*\"|\S+))",
             constraints,
@@ -97,7 +95,7 @@ def parse_sql_schema(schema: str) -> SQLTableInfoBase:
             constraints,
             re.IGNORECASE,
         )
-        foreign_key: dict[str, str] | None = None
+        foreign_key: Union[dict[str, str], None] = None
         if fk_match:
             foreign_key = {
                 "table": fk_match.group(1),

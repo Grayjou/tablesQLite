@@ -4,7 +4,7 @@ This module provides functions for validating SQL identifiers
 like table and column names.
 """
 
-from __future__ import annotations
+from typing import Set, Union
 
 KEYWORDS = {
     "select",
@@ -63,7 +63,7 @@ def validate_name(
     allow_dot: bool = True,
     allow_dollar: bool = False,
     max_len: int = 255,
-    forgiven_chars: set[str] | None = None,
+    forgiven_chars: Union[Set[str], None] = None,
     allow_number: bool = False,
 ) -> None:
     """Validate a SQL identifier name.
@@ -147,7 +147,7 @@ def standard_column_validation(
     allow_dot: bool = False,
     allow_dollar: bool = False,
     max_len: int = 255,
-    forgiven_chars: set[str] | None = None,
+    forgiven_chars: Union[Set[str], None] = None,
     allow_number: bool = False,
 ) -> None:
     """Validate a column name according to various criteria.
@@ -189,7 +189,7 @@ def standard_table_validation(
     allow_dot: bool = False,
     allow_dollar: bool = False,
     max_len: int = 255,
-    forgiven_chars: set[str] | None = None,
+    forgiven_chars: Union[Set[str], None] = None,
     allow_number: bool = False,
 ) -> None:
     """Validate a table name according to various criteria.

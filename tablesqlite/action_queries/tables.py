@@ -4,14 +4,12 @@ This module provides functions for generating SQL statements for
 table operations like create, drop, and rename.
 """
 
-from __future__ import annotations
-
-from typing import Any
+from typing import Any, Union
 
 from ..objects import SQLTableInfoBase
 
 
-def _extract_table_name(table: str | SQLTableInfoBase) -> str:
+def _extract_table_name(table: Union[str, SQLTableInfoBase]) -> str:
     """Extract the table name from a string or SQLTableInfoBase.
 
     Args:
@@ -43,7 +41,7 @@ def create_table_query(t: SQLTableInfoBase) -> tuple[str, list[Any]]:
 
 
 def drop_table_query(
-    table: SQLTableInfoBase | str,
+    table: Union[SQLTableInfoBase, str],
     check_if_exists: bool = False,
 ) -> tuple[str, list[Any]]:
     """Generate a DROP TABLE SQL statement.

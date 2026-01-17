@@ -4,8 +4,6 @@ This module provides decorators and base classes for enforcing
 property types and validation in data classes.
 """
 
-from __future__ import annotations
-
 from collections.abc import Callable
 from typing import Any
 

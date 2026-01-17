@@ -5,10 +5,8 @@ represent metadata for SQL columns and tables with support for various
 constraints like NOT NULL, DEFAULT, CHECK, UNIQUE, PRIMARY KEY, and FOREIGN KEY.
 """
 
-from __future__ import annotations
-
 from collections.abc import Iterable
-from typing import Any
+from typing import Any, Set, Union
 
 from expressql import SQLCondition, SQLExpression, col
 
@@ -34,8 +32,8 @@ SQL_LITERAL_DEFAULTS = {
 
 
 def autoconvert_default(
-    value: str | int | float | bool | Unknown | SQLExpression,
-) -> str | int | float | bool | Unknown | SQLExpression:
+    value: Union[str, int, float, bool, Unknown, SQLExpression],
+) -> Union[str, int, float, bool, Unknown, SQLExpression]:
     """Convert SQL literal defaults to SQLExpression objects.
 
     Args:
@@ -50,8 +48,8 @@ def autoconvert_default(
 
 
 def get_value(
-    item: str | int | float | SQLExpression | Unknown,
-) -> str | int | float | Unknown:
+    item: Union[str, int, float, SQLExpression, Unknown],
+) -> Union[str, int, float, Unknown]:
     """Extract the value from an item, handling Unknown and SQLExpression.
 
     Args:
@@ -67,7 +65,7 @@ def get_value(
     return item
 
 
-def format_default_value(val: str | int | float | SQLExpression) -> str:
+def format_default_value(val: Union[str, int, float, SQLExpression]) -> str:
     """Format a default value for use in SQL.
 
     Args:
@@ -86,7 +84,9 @@ def format_default_value(val: str | int | float | SQLExpression) -> str:
 
 
 @add_bool_properties("not_null", "primary_key", "unique")
-@add_undetermined_properties(cid=int, default_value=str | int | float | SQLExpression)
+@add_undetermined_properties(
+    cid=int, default_value=Union[str, int, float, SQLExpression]
+)
 class SQLColumnInfoBase(DualContainer):
     """Base class representing metadata for a SQL column.
 
@@ -119,8 +119,8 @@ class SQLColumnInfoBase(DualContainer):
         check: SQLCondition | None = None,
     ) -> None:
         """Initialize a SQLColumnInfoBase instance."""
-        self._tables: set[SQLTableInfoBase] = set()
-        self._table_names: set[str] = set()
+        self._tables: Set[SQLTableInfoBase] = set()
+        self._table_names: Set[str] = set()
         self.foreign_key = self._validate_foreign_key(foreign_key)
         self.check = check
 
@@ -170,7 +170,7 @@ class SQLColumnInfoBase(DualContainer):
             )
         return None
 
-    def _add_table(self, table: SQLTableInfoBase) -> None:
+    def _add_table(self, table: "SQLTableInfoBase") -> None:
         """Add a table to the column's linked tables.
 
         Args:
@@ -185,7 +185,7 @@ class SQLColumnInfoBase(DualContainer):
         self._table_names.add(table.name)
         table._column_dict[self.name] = self
 
-    def _remove_table(self, table: SQLTableInfoBase) -> None:
+    def _remove_table(self, table: "SQLTableInfoBase") -> None:
         """Remove a table from the column's linked tables.
 
         Args:
@@ -252,12 +252,12 @@ class SQLColumnInfoBase(DualContainer):
         return self.primary_key and self.data_type.upper() in ["INTEGER", "INT"]
 
     @property
-    def tables(self) -> set[SQLTableInfoBase]:
+    def tables(self) -> Set["SQLTableInfoBase"]:
         """Get the set of tables this column is linked to."""
         return self._tables
 
     @tables.setter
-    def tables(self, value: set[SQLTableInfoBase]) -> None:
+    def tables(self, value: Set["SQLTableInfoBase"]) -> None:
         """Prevent direct setting of tables.
 
         Raises:
@@ -266,12 +266,12 @@ class SQLColumnInfoBase(DualContainer):
         raise TypeError("tables must be set through the SQLTableInfoBase instance")
 
     @property
-    def table_names(self) -> set[str]:
+    def table_names(self) -> Set[str]:
         """Get the set of table names this column is linked to."""
         return self._table_names
 
     @table_names.setter
-    def table_names(self, value: set[str]) -> None:
+    def table_names(self, value: Set[str]) -> None:
         """Prevent direct setting of table names.
 
         Raises:
@@ -379,7 +379,7 @@ class SQLColumnInfoBase(DualContainer):
         ensure_all_bools([self.not_null, self.primary_key, self.unique])
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> SQLColumnInfoBase:
+    def from_dict(cls, data: dict[str, Any]) -> "SQLColumnInfoBase":
         """Create a column from a dictionary.
 
         Args:
@@ -399,7 +399,7 @@ class SQLColumnInfoBase(DualContainer):
         )
 
     @classmethod
-    def from_tuple(cls, data: tuple[Any, ...]) -> SQLColumnInfoBase:
+    def from_tuple(cls, data: tuple[Any, ...]) -> "SQLColumnInfoBase":
         """Create a column from a tuple.
 
         Args:
@@ -433,7 +433,7 @@ class SQLColumnInfoBase(DualContainer):
 
     @staticmethod
     def can_be_column(
-        data: dict[str, Any] | tuple[Any, ...] | SQLColumnInfoBase,
+        data: dict[str, Any] | tuple[Any, ...] | "SQLColumnInfoBase",
     ) -> bool:
         """Check if data can be converted to a column.
 
@@ -453,8 +453,8 @@ class SQLColumnInfoBase(DualContainer):
 
     @staticmethod
     def return_column(
-        data: dict[str, Any] | tuple[Any, ...] | SQLColumnInfoBase,
-    ) -> SQLColumnInfoBase:
+        data: dict[str, Any] | tuple[Any, ...] | "SQLColumnInfoBase",
+    ) -> "SQLColumnInfoBase":
         """Convert data to a SQLColumnInfoBase instance.
 
         Args:
@@ -500,7 +500,7 @@ class SQLColumnInfoBase(DualContainer):
             return False
         return self.to_dict() == other.to_dict()
 
-    def copy(self) -> SQLColumnInfoBase:
+    def copy(self) -> "SQLColumnInfoBase":
         """Create a copy of this column.
 
         Returns:
@@ -795,7 +795,7 @@ class SQLTableInfoBase(UndeterminedContainer):
             pk_clause = f"PRIMARY KEY ({pk_names})"
             column_defs.append(pk_clause)
 
-        extra_column_defs: set[str] = set()
+        extra_column_defs: Set[str] = set()
 
         # Single-column FKs from columns
         for column in self.columns:
@@ -908,7 +908,7 @@ class SQLTableInfoBase(UndeterminedContainer):
         not_null_values: dict[str, bool] | None = None,
         unique_cols: list[str] | None = None,
         auto_primary_key: bool = True,
-    ) -> SQLTableInfoBase:
+    ) -> "SQLTableInfoBase":
         """Create a table from a data row.
 
         Args:
@@ -990,7 +990,7 @@ class SQLTableInfoBase(UndeterminedContainer):
             column._tables.discard(self)
             column._table_names.discard(self.name)
 
-    def copy(self) -> SQLTableInfoBase:
+    def copy(self) -> "SQLTableInfoBase":
         """Create a copy of this table.
 
         Returns:
@@ -1003,7 +1003,7 @@ class SQLTableInfoBase(UndeterminedContainer):
             foreign_keys=self.foreign_keys,
         )
 
-    def copy_without_cols(self, *column_names: str) -> SQLTableInfoBase:
+    def copy_without_cols(self, *column_names: str) -> "SQLTableInfoBase":
         """Create a copy of this table without specified columns.
 
         Args:

@@ -4,8 +4,6 @@ This module provides the Unknown class for representing undetermined values
 and utility functions for string quoting.
 """
 
-from __future__ import annotations
-
 from typing import Any
 
 DOUBLE_QUOTE = '"'

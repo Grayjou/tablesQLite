@@ -3,8 +3,6 @@
 This module provides functions for validating database file paths.
 """
 
-from __future__ import annotations
-
 import os
 import re
 

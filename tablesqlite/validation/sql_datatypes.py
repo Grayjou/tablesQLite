@@ -3,7 +3,7 @@
 This module provides functions and classes for validating SQL data types.
 """
 
-from __future__ import annotations
+from typing import Set, Union
 
 from sortedcontainers import SortedDict
 
@@ -83,7 +83,7 @@ PLACEHOLDER_INT_KEYS = {"size", "fsp", "p"}
 
 def match_bracket_tuple(
     data_str: str,
-    pairs: set[tuple[str, tuple[str, ...]]] | None = None,
+    pairs: Union[Set[tuple[str, tuple[str, ...]]], None] = None,
 ) -> bool:
     """Check if a data type string matches any of the predefined types.
 
@@ -184,7 +184,7 @@ class Validator(SortedDict):
         self.pop(type_.upper(), None)
 
 
-_validator: Validator | None = None
+_validator: Union[Validator, None] = None
 
 
 def get_validator() -> Validator:

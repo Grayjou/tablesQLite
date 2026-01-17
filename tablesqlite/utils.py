@@ -4,8 +4,6 @@ This module provides helper functions for type conversion, foreign key validatio
 and schema comparison operations.
 """
 
-from __future__ import annotations
-
 from enum import IntEnum
 from typing import TYPE_CHECKING, Any
 
