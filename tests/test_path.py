@@ -42,15 +42,14 @@ class TestValidateFileName:
     def test_validate_file_name_just_slash(self) -> None:
         """Test validate_file_name with just a slash.
 
-        Note: A single forward slash gets converted to empty string by
-        os.path.basename on Unix, so the error message is about empty filename.
-        A backslash on Unix is not a path separator and stays as-is, triggering
-        the 'just a slash' check.
+        Note: On Windows, both forward and backward slashes are path separators,
+        so os.path.basename converts them to empty strings, triggering the
+        'cannot be empty' error. On Unix, only forward slash is a separator.
         """
         with pytest.raises(ValueError, match="cannot be empty"):
             validate_file_name("/")
-        # On Unix, backslash is not a separator, so it stays as "\\"
-        with pytest.raises(ValueError, match="just a slash"):
+        # On Windows, backslash is also a separator, so it becomes empty too
+        with pytest.raises(ValueError, match="cannot be empty"):
             validate_file_name("\\")
 
     def test_validate_file_name_illegal_chars(self) -> None:

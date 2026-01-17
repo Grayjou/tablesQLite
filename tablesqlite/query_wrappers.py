@@ -71,7 +71,7 @@ class SQLColumnInfo(SQLColumnInfoBase):
             check=check,
         )
 
-    def resolve_table_name(
+    def _resolve_table_name(
         self,
         table_name: Union[str, None],
         check_in_tables: bool = False,
@@ -173,7 +173,7 @@ class SQLColumnInfo(SQLColumnInfoBase):
 
     def add_query(
         self,
-        table_name: str | None = None,
+        table_name: Union[str, None] = None,
         check_if_possible: bool = False,
         check_in_tables: bool = False,
         *,
@@ -250,9 +250,9 @@ class SQLTableInfo(SQLTableInfoBase):
     def __init__(
         self,
         name: str,
-        columns: Iterable[SQLColumnInfo] | Unknown = unknown,
-        database_path: str | Unknown = unknown,
-        foreign_keys: list[dict[str, list[str] | str]] | None = None,
+        columns: Union[Iterable["SQLColumnInfo"], Unknown] = unknown,
+        database_path: Union[str, Unknown] = unknown,
+        foreign_keys: Union[list[dict[str, Union[list[str], str]]], None] = None,
     ) -> None:
         """Initialize a SQLTableInfo instance."""
         super().__init__(name, columns, database_path, foreign_keys)
@@ -353,7 +353,9 @@ class SQLTableInfo(SQLTableInfoBase):
         )
 
     @classmethod
-    def from_sql_schema(cls, schema: str | list[dict[str, Any]]) -> "SQLTableInfo":
+    def from_sql_schema(
+        cls, schema: Union[str, list[dict[str, Any]]]
+    ) -> "SQLTableInfo":
         """Create a SQLTableInfo from a SQL schema string.
 
         Args:
@@ -403,7 +405,7 @@ class SQLTableInfo(SQLTableInfoBase):
 
     @staticmethod
     def validate_columns(
-        columns: Iterable[SQLColumnInfoBase] | Unknown,
+        columns: Union[Iterable[SQLColumnInfoBase], Unknown],
     ) -> list[SQLColumnInfo]:
         """Validate and convert columns to SQLColumnInfo instances.
 

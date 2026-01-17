@@ -110,13 +110,13 @@ class SQLColumnInfoBase(DualContainer):
         name: str,
         data_type: str,
         not_null: bool = False,
-        default_value: str | int | float | Unknown = unknown,
+        default_value: Union[str, int, float, Unknown] = unknown,
         primary_key: bool = False,
-        cid: int | Unknown = unknown,
+        cid: Union[int, Unknown] = unknown,
         *,
         unique: bool = False,
-        foreign_key: dict[str, str] | None = None,
-        check: SQLCondition | None = None,
+        foreign_key: Union[dict[str, str], None] = None,
+        check: Union[SQLCondition, None] = None,
     ) -> None:
         """Initialize a SQLColumnInfoBase instance."""
         self._tables: Set[SQLTableInfoBase] = set()
@@ -133,8 +133,8 @@ class SQLColumnInfoBase(DualContainer):
         self.default_value = autoconvert_default(default_value)
 
     def _validate_foreign_key(
-        self, fk: dict[str, str] | None
-    ) -> dict[str, str] | None:
+        self, fk: Union[dict[str, str], None]
+    ) -> Union[dict[str, str], None]:
         """Validate a foreign key definition.
 
         Args:
@@ -156,7 +156,7 @@ class SQLColumnInfoBase(DualContainer):
             raise ValueError("Foreign key 'table' and 'column' must be strings")
         return fk
 
-    def foreign_key_clause(self) -> str | None:
+    def foreign_key_clause(self) -> Union[str, None]:
         """Generate the FOREIGN KEY clause for this column.
 
         Returns:
@@ -281,7 +281,7 @@ class SQLColumnInfoBase(DualContainer):
             "table_names must be set through the SQLTableInfoBase instance"
         )
 
-    def to_dict(self) -> dict[str, str | int | float | bool | Unknown]:
+    def to_dict(self) -> dict[str, Union[str, int, float, bool, Unknown]]:
         """Convert the column to a dictionary representation.
 
         Returns:
@@ -297,7 +297,7 @@ class SQLColumnInfoBase(DualContainer):
             "unique": self.unique,
         }
 
-    def to_raw_dict(self) -> dict[str, str | int | float | bool | None]:
+    def to_raw_dict(self) -> dict[str, Union[str, int, float, bool, None]]:
         """Convert the column to a raw dictionary with None for unknown values.
 
         Returns:
@@ -433,7 +433,7 @@ class SQLColumnInfoBase(DualContainer):
 
     @staticmethod
     def can_be_column(
-        data: dict[str, Any] | tuple[Any, ...] | "SQLColumnInfoBase",
+        data: Union[dict[str, Any], tuple[Any, ...], "SQLColumnInfoBase"],
     ) -> bool:
         """Check if data can be converted to a column.
 
@@ -453,7 +453,7 @@ class SQLColumnInfoBase(DualContainer):
 
     @staticmethod
     def return_column(
-        data: dict[str, Any] | tuple[Any, ...] | "SQLColumnInfoBase",
+        data: Union[dict[str, Any], tuple[Any, ...], "SQLColumnInfoBase"],
     ) -> "SQLColumnInfoBase":
         """Convert data to a SQLColumnInfoBase instance.
 
@@ -535,15 +535,15 @@ class SQLTableInfoBase(UndeterminedContainer):
     def __init__(
         self,
         name: str,
-        columns: Iterable[SQLColumnInfoBase] | Unknown = unknown,
-        database_path: str | Unknown = unknown,
-        foreign_keys: list[dict[str, list[str] | str]] | None = None,
+        columns: Union[Iterable[SQLColumnInfoBase], Unknown] = unknown,
+        database_path: Union[str, Unknown] = unknown,
+        foreign_keys: Union[list[dict[str, Union[list[str], str]]], None] = None,
     ) -> None:
         """Initialize a SQLTableInfoBase instance."""
-        self.auto_increment_column: SQLColumnInfoBase | None = None
-        self._columns: list[SQLColumnInfoBase] | Unknown = unknown
+        self.auto_increment_column: Union[SQLColumnInfoBase, None] = None
+        self._columns: Union[list[SQLColumnInfoBase], Unknown] = unknown
         self._column_dict: dict[str, SQLColumnInfoBase] = {}
-        self._database_path: str | Unknown = unknown
+        self._database_path: Union[str, Unknown] = unknown
         self.foreign_keys = foreign_keys or []
 
         self.name = name
@@ -572,13 +572,13 @@ class SQLTableInfoBase(UndeterminedContainer):
         self._name = value
 
     @property
-    def foreign_keys(self) -> list[dict[str, list[str] | str]]:
+    def foreign_keys(self) -> list[dict[str, Union[list[str], str]]]:
         """Get the list of table-level foreign keys."""
         return self._foreign_keys
 
     @foreign_keys.setter
     def foreign_keys(
-        self, value: list[dict[str, list[str] | str]]
+        self, value: list[dict[str, Union[list[str], str]]]
     ) -> None:
         """Set the foreign keys with validation.
 
@@ -617,12 +617,12 @@ class SQLTableInfoBase(UndeterminedContainer):
         self._foreign_keys = value
 
     @property
-    def database_path(self) -> str | Unknown:
+    def database_path(self) -> Union[str, Unknown]:
         """Get the database path."""
         return self._database_path
 
     @database_path.setter
-    def database_path(self, value: str | Unknown) -> None:
+    def database_path(self, value: Union[str, Unknown]) -> None:
         """Set the database path with validation.
 
         Args:
@@ -652,7 +652,7 @@ class SQLTableInfoBase(UndeterminedContainer):
         return [] if is_undetermined(self._columns) else self._columns
 
     @columns.setter
-    def columns(self, value: Iterable[SQLColumnInfoBase] | Unknown) -> None:
+    def columns(self, value: Union[Iterable[SQLColumnInfoBase], Unknown]) -> None:
         """Set the columns with validation.
 
         Args:
@@ -751,7 +751,7 @@ class SQLTableInfoBase(UndeterminedContainer):
 
         self._columns = new_columns
 
-    def _validate_auto_increment(self) -> SQLColumnInfoBase | None:
+    def _validate_auto_increment(self) -> Union[SQLColumnInfoBase, None]:
         """Validate and return the auto-increment column if present.
 
         Returns:
@@ -838,7 +838,7 @@ class SQLTableInfoBase(UndeterminedContainer):
         """
         return self.sql_creation_str(if_not_exists)
 
-    def to_dict(self) -> dict[str, str | list[SQLColumnInfoBase] | Unknown]:
+    def to_dict(self) -> dict[str, Union[str, list[SQLColumnInfoBase], Unknown]]:
         """Convert the table to a dictionary representation.
 
         Returns:
@@ -850,7 +850,7 @@ class SQLTableInfoBase(UndeterminedContainer):
             "database_path": self.database_path,
         }
 
-    def to_raw_dict(self) -> dict[str, str | list[dict[str, Any]] | None]:
+    def to_raw_dict(self) -> dict[str, Union[str, list[dict[str, Any]], None]]:
         """Convert the table to a raw dictionary with None for unknown values.
 
         Returns:
@@ -902,11 +902,11 @@ class SQLTableInfoBase(UndeterminedContainer):
         cls,
         table_name: str,
         row: dict[str, Any],
-        primary_keys: list[str] | None = None,
-        datatypes: dict[str, str] | None = None,
-        default_values: dict[str, Any] | None = None,
-        not_null_values: dict[str, bool] | None = None,
-        unique_cols: list[str] | None = None,
+        primary_keys: Union[list[str], None] = None,
+        datatypes: Union[dict[str, str], None] = None,
+        default_values: Union[dict[str, Any], None] = None,
+        not_null_values: Union[dict[str, bool], None] = None,
+        unique_cols: Union[list[str], None] = None,
         auto_primary_key: bool = True,
     ) -> "SQLTableInfoBase":
         """Create a table from a data row.
@@ -1024,7 +1024,7 @@ class SQLTableInfoBase(UndeterminedContainer):
 
     @staticmethod
     def validate_columns(
-        columns: Iterable[SQLColumnInfoBase] | Unknown,
+        columns: Union[Iterable[SQLColumnInfoBase], Unknown],
     ) -> list[SQLColumnInfoBase]:
         """Validate and convert columns to a list.
 
